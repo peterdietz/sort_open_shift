@@ -5,3 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+
+grand_village = Organization.create({name: 'Grand Village', v2organization_id: '1029'})
+employee = Employee.create({organization: grand_village, name: 'Dietz, Peter', position: 'STNA', employee_id: '123'})

@@ -17,7 +17,7 @@
 
 <p>
   <strong>Organization:</strong>
-  <%= @employee.organization %>
+  <%= link_to @employee.organization.name, organization_path(@employee.organization) %>
 </p>
 
 <%= link_to 'Edit', edit_employee_path(@employee) %> |
