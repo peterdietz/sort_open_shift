@@ -25,13 +25,24 @@
 <h4>Hourly Scores</h4>
 <ul>
   <% @employee.scores.each do |score| %>
-    <li><%= "#{score.hourOffset} == #{score.SHITS}" %></li>
+    <li><%= "#{score.hourOffset} == v1:#{score.V1SHITS} v2:#{score.V2SHITS}" %></li>
   <% end %>
 </ul>
 
+<!--hourOffset: shift['hourOffset'],-->
+<!--shiftCount: shift['shiftCount'],-->
+<!--recentShifts: shift['recentShifts'],-->
+<!--nonRecentShifts: shift['nonRecentShifts'],-->
+<!--recentRequestShifts: shift['recentRequestShifts'],-->
+<!--nonRecentRequestShifts: shift['nonRecentRequestShifts'],-->
+<!--recentCallOffs: shift['recentCallOffs'],-->
+<!--nonRecentCallOffs: shift['nonRecentCallOffs'],-->
+<!--recentNoShow: shift['recentNoShow'],-->
+<!--nonRecentNoShow: shift['nonRecentNoShow'],-->
+<!--V1SHITS: shift['V1SHITS'],-->
+<!--V2SHITS: shift['V2SHITS']-->
 
-
-<% scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.shiftCount}, #{score.recentShifts}, #{score.nonRecentShifts}, #{score.SHITS}]"}.join(', ') %>
+<% scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.recentShifts}, #{score.nonRecentShifts}, #{score.recentRequestShifts}, #{score.nonRecentRequestShifts}, #{score.recentCallOffs}, #{score.nonRecentCallOffs}, #{score.recentNoShow}, #{score.nonRecentNoShow}, #{score.V1SHITS}, #{score.V2SHITS}]"}.join(', ') %>
 
 <script type="application/javascript">
     google.charts.load('current', {packages: ['corechart', 'line']});
@@ -40,10 +51,16 @@
     function drawBackgroundColor() {
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'X');
-        data.addColumn('number', 'Shift Count');
         data.addColumn('number', 'Recent Shifts');
         data.addColumn('number', 'Non-Recent Shifts');
-        data.addColumn('number', 'SHIT Score');
+        data.addColumn('number', 'Recent Request Shifts');
+        data.addColumn('number', 'Non-Recent Request Shifts');
+        data.addColumn('number', 'Recent Call Offs');
+        data.addColumn('number', 'Non-Recent Call Offs');
+        data.addColumn('number', 'Recent No Show');
+        data.addColumn('number', 'Non-Recent No Show');
+        data.addColumn('number', 'V1SHIT Score');
+        data.addColumn('number', 'V2SHIT Score');
 
         data.addRows([
             <%= scores_csv %>
@@ -56,9 +73,7 @@
             },
             vAxis: {
                 title: 'Shift work history'
-            },
-
-
+            }
         };
 
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));

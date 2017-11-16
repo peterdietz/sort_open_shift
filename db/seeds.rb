@@ -8,16 +8,29 @@
 
 
 grand_village = Organization.create({name: 'Grand Village', v2organization_id: '1029'})
-peter = Employee.create({organization: grand_village, name: 'Dietz, Peter', position: 'STNA', employee_id: '123'})
 
+employee_shift_files = Dir['data/1029/*.json']
 
-peter_shifts = JSON.parse(File.read('tempEmp.json'))
+employee_shift_files.each do |employee_file_name|
+  employee_id = File.basename(employee_file_name, '.json')
+  employee = Employee.create({organization: grand_village, name: "Person #{employee_id}", position: 'unset?', employee_id: employee_id})
 
-peter_shifts.each do |shift|
-  Score.create({employee: peter,
-                         hourOffset: shift['hourOffset'],
-                         shiftCount: shift['shiftCount'],
-                         recentShifts: shift['recentShifts'],
-                         nonRecentShifts: shift['nonRecentShifts'],
-                         SHITS: shift['SHITS']})
+  employee_shifts = JSON.parse(File.read(employee_file_name))
+
+  employee_shifts.each do |shift|
+  Score.create({employee: employee,
+                hourOffset: shift['hourOffset'],
+                shiftCount: shift['shiftCount'],
+                recentShifts: shift['recentShifts'],
+                nonRecentShifts: shift['nonRecentShifts'],
+                recentRequestShifts: shift['recentRequestShifts'],
+                nonRecentRequestShifts: shift['nonRecentRequestShifts'],
+                recentCallOffs: shift['recentCallOffs'],
+                nonRecentCallOffs: shift['nonRecentCallOffs'],
+                recentNoShow: shift['recentNoShow'],
+                nonRecentNoShow: shift['nonRecentNoShow'],
+                V1SHITS: shift['V1SHITS'],
+                V2SHITS: shift['V2SHITS']
+               })
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171115211603) do
+ActiveRecord::Schema.define(version: 20171116151640) do
 
   create_table "employees", force: :cascade do |t|
     t.string "name"
@@ -34,10 +34,17 @@ ActiveRecord::Schema.define(version: 20171115211603) do
     t.integer "shiftCount"
     t.integer "recentShifts"
     t.integer "nonRecentShifts"
-    t.float "SHITS"
+    t.float "V1SHITS"
     t.integer "employee_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "recentRequestShifts"
+    t.integer "nonRecentRequestShifts"
+    t.integer "recentCallOffs"
+    t.integer "nonRecentCallOffs"
+    t.integer "recentNoShow"
+    t.integer "nonRecentNoShow"
+    t.float "V2SHITS"
     t.index ["employee_id"], name: "index_scores_on_employee_id"
   end
 
