@@ -8,4 +8,16 @@
 
 
 grand_village = Organization.create({name: 'Grand Village', v2organization_id: '1029'})
-employee = Employee.create({organization: grand_village, name: 'Dietz, Peter', position: 'STNA', employee_id: '123'})
+peter = Employee.create({organization: grand_village, name: 'Dietz, Peter', position: 'STNA', employee_id: '123'})
+
+
+peter_shifts = JSON.parse(File.read('tempEmp.json'))
+
+peter_shifts.each do |shift|
+  Score.create({employee: peter,
+                         hourOffset: shift['hourOffset'],
+                         shiftCount: shift['shiftCount'],
+                         recentShifts: shift['recentShifts'],
+                         nonRecentShifts: shift['nonRecentShifts'],
+                         SHITS: shift['SHITS']})
+end

@@ -20,5 +20,12 @@
   <%= link_to @employee.organization.name, organization_path(@employee.organization) %>
 </p>
 
+<h4>Hourly Scores</h4>
+<ul>
+  <% @employee.scores.each do |score| %>
+    <li><%= "#{score.hourOffset} == #{score.SHITS}" %></li>
+  <% end %>
+</ul>
+
 <%= link_to 'Edit', edit_employee_path(@employee) %> |
 <%= link_to 'Back', employees_path %>

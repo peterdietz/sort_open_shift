@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hourOffset: 1
+  shiftCount: 1
+  recentShifts: 1
+  nonRecentShifts: 1
+  SHITS: 1
+  employee: one
+
+two:
+  hourOffset: 1
+  shiftCount: 1
+  recentShifts: 1
+  nonRecentShifts: 1
+  SHITS: 1
+  employee: two

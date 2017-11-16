@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Houroffset:</strong>
+  <%= @score.hourOffset %>
+</p>
+
+<p>
+  <strong>Shiftcount:</strong>
+  <%= @score.shiftCount %>
+</p>
+
+<p>
+  <strong>Recentshifts:</strong>
+  <%= @score.recentShifts %>
+</p>
+
+<p>
+  <strong>Nonrecentshifts:</strong>
+  <%= @score.nonRecentShifts %>
+</p>
+
+<p>
+  <strong>Shits:</strong>
+  <%= @score.SHITS %>
+</p>
+
+<p>
+  <strong>Employee:</strong>
+  <%= @score.employee %>
+</p>
+
+<%= link_to 'Edit', edit_score_path(@score) %> |
+<%= link_to 'Back', scores_path %>
