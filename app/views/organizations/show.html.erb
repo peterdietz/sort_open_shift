@@ -13,11 +13,59 @@
 </p>
 
 <h4>Employees in this Organization</h4>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
 <ul>
+  <% scores_hash = Hash.new{|h,k| h[k] = {}} %>
   <% @organization.employee.each do |employee| %>
       <li><%= link_to employee.name, employee_path(employee) %></li>
+      <% employee.scores.each do |score|
+          scores_hash[score.hourOffset][employee.employee_id] = score.V1SHITS
+      end %>
   <% end %>
 </ul>
+
+<%
+  ## I: {0=>{"1001578"=>0.0, "1003867"=>0.0, "1003868"=>0.0, "1020942"=>0.0,
+  ## O: [0, 0, 3, 0, 0, 0, 0, 0, 0, 0.0189613527, 0.0189613527]
+  scores_csv = ''
+  scores_hash.each do |hourOffset, employee_and_score|
+    all_empls_scores = employee_and_score.map{|employee_id, score| score}.join(', ')
+    scores_csv += "[#{hourOffset}, #{all_empls_scores}], "
+  end
+%>
+
+<script type="application/javascript">
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBackgroundColor);
+
+    function drawBackgroundColor() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'X');
+
+        <% scores_hash.first[1].keys.each do |employee_id| %>
+          data.addColumn('number', <%=raw employee_id %>);
+        <% end %>
+
+
+        data.addRows([
+          <%= scores_csv %>
+        ]);
+
+        var options = {
+            hAxis: {
+                title: 'Week Hour Offset',
+                ticks: [0, 24, 48, 72, 96, 120, 144]
+            },
+            vAxis: {
+                title: 'Shift work history'
+            }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
 
 <%= link_to 'Edit', edit_organization_path(@organization) %> |
 <%= link_to 'Back', organizations_path %>
