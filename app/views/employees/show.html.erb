@@ -20,6 +20,8 @@
   <%= link_to @employee.organization.name, organization_path(@employee.organization) %>
 </p>
 
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
 <h4>Hourly Scores</h4>
 <ul>
   <% @employee.scores.each do |score| %>
@@ -27,9 +29,9 @@
   <% end %>
 </ul>
 
-<div id="chart_div" style="width: 900px; height: 500px;"></div>
 
-<%= scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.SHITS}]"}.join(', ') %>
+
+<% scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.shiftCount}, #{score.recentShifts}, #{score.nonRecentShifts}, #{score.SHITS}]"}.join(', ') %>
 
 <script type="application/javascript">
     google.charts.load('current', {packages: ['corechart', 'line']});
@@ -38,6 +40,9 @@
     function drawBackgroundColor() {
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'X');
+        data.addColumn('number', 'Shift Count');
+        data.addColumn('number', 'Recent Shifts');
+        data.addColumn('number', 'Non-Recent Shifts');
         data.addColumn('number', 'SHIT Score');
 
         data.addRows([
@@ -46,11 +51,13 @@
 
         var options = {
             hAxis: {
-                title: 'Week Hour Offset'
+                title: 'Week Hour Offset',
+                ticks: [0, 24, 48, 72, 96, 120, 144]
             },
             vAxis: {
                 title: 'Shift work history'
-            }
+            },
+
 
         };
 
