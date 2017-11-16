@@ -12,58 +12,76 @@
   <%= @organization.v2organization_id %>
 </p>
 
-<h4>Employees in this Organization</h4>
+<h3>Staff Shift Work History</h3>
+<p>Break down all the hours in a week 24h * 7 days = 168 hours. Look at their work history and graph a weighted score of all hours worked.</p>
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+<h4>Employees in this Organization</h4>
 
 <ul>
   <% scores_hash = Hash.new{|h,k| h[k] = {}} %>
   <% @organization.employee.each do |employee| %>
       <li><%= link_to employee.name, employee_path(employee) %></li>
       <% employee.scores.each do |score|
-          scores_hash[score.hourOffset][employee.employee_id] = score.V1SHITS
+          scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
       end %>
   <% end %>
 </ul>
 
 <%
-  ## I: {0=>{"1001578"=>0.0, "1003867"=>0.0, "1003868"=>0.0, "1020942"=>0.0,
-  ## O: [0, 0, 3, 0, 0, 0, 0, 0, 0, 0.0189613527, 0.0189613527]
+  #
+  def get_js_date_for_offset(hour_offset)
+    monday = DateTime.new(2017, 10, 13, 0, 0, 0)
+    date_time = monday + (hour_offset / 24.0)
+    return date_time.strftime("new Date(%Y,%m,%d,%H)")
+  end
+
   scores_csv = ''
   scores_hash.each do |hourOffset, employee_and_score|
     all_empls_scores = employee_and_score.map{|employee_id, score| score}.join(', ')
-    scores_csv += "[#{hourOffset}, #{all_empls_scores}], "
+    js_date = get_js_date_for_offset(hourOffset)
+    scores_csv += "[#{js_date}, #{all_empls_scores}], "
   end
 %>
 
 <script type="application/javascript">
-    google.charts.load('current', {packages: ['corechart', 'line']});
-    google.charts.setOnLoadCallback(drawBackgroundColor);
+    google.charts.load('current', {packages: ['corechart', 'line', 'timeline', 'annotationchart']});
+    google.charts.setOnLoadCallback(drawChart);
 
-    function drawBackgroundColor() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('number', 'X');
+    function drawChart() {
+        var container = document.getElementById('chart_div');
+        var chart = new google.visualization.AnnotationChart(container);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({type: 'date', id: 'X'});
 
         <% scores_hash.first[1].keys.each do |employee_id| %>
-          data.addColumn('number', <%=raw employee_id %>);
+          dataTable.addColumn('number', <%=raw employee_id %>);
         <% end %>
 
 
-        data.addRows([
+        dataTable.addRows([
           <%= scores_csv %>
         ]);
+
+        var date_formatter = new google.visualization.DateFormat({
+            pattern: "EEE"
+        });
+
+        date_formatter.format(dataTable, 0)
 
         var options = {
             hAxis: {
                 title: 'Week Hour Offset',
+                format: 'EEE',
                 ticks: [0, 24, 48, 72, 96, 120, 144]
             },
             vAxis: {
                 title: 'Shift work history'
-            }
+            },
+            dateFormat: "EEE"
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
+        chart.draw(dataTable, options);
     }
 </script>
 
