@@ -27,5 +27,37 @@
   <% end %>
 </ul>
 
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+<%= scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.SHITS}]"}.join(', ') %>
+
+<script type="application/javascript">
+    google.charts.load('current', {packages: ['corechart', 'line']});
+    google.charts.setOnLoadCallback(drawBackgroundColor);
+
+    function drawBackgroundColor() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'X');
+        data.addColumn('number', 'SHIT Score');
+
+        data.addRows([
+            <%= scores_csv %>
+        ]);
+
+        var options = {
+            hAxis: {
+                title: 'Week Hour Offset'
+            },
+            vAxis: {
+                title: 'Shift work history'
+            }
+
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+    }
+</script>
+
 <%= link_to 'Edit', edit_employee_path(@employee) %> |
 <%= link_to 'Back', employees_path %>
