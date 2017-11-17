@@ -1,0 +1,124 @@
+<p id="notice"><%= notice %></p>
+
+<h1><%= @organization.name %></h1>
+
+<p>
+  <strong>Name:</strong>
+  <%= @organization.name %>
+</p>
+
+<p>
+  <strong>V2organization:</strong>
+  <%= @organization.v2organization_id %>
+</p>
+
+<h3>Staff Shift Work History</h3>
+<p>Break down all the hours in a week 24h * 7 days = 168 hours. Look at their work history and graph a weighted score of all hours worked.</p>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
+<h4>Employees in this Organization</h4>
+<p>And scores for how appropriate of a pick they are for various shifts throughout the week.</p>
+<div id="table_div"></div>
+<%
+  scores_hash = Hash.new{|h,k| h[k] = {}}
+  shift_score_table_data = ''
+  days = {0 => 'Mo', 1 => 'Tu', 2 => 'We', 3 => 'Th', 4 => 'Fr', 5 => 'Sa', 6 => 'Su'}
+
+  @organization.employee.each do |employee|
+    week_data = ''
+    (0..6).each do |day|
+      week_data << "#{Score.get_shift_score(employee, day, 1)}, "
+      week_data << "#{Score.get_shift_score(employee, day, 2)}, "
+      week_data << "#{Score.get_shift_score(employee, day, 3)}, "
+    end
+    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', #{week_data}], "
+
+    employee.scores.each do |score|
+      scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
+    end
+  end
+
+  def get_js_date_for_offset(hour_offset)
+    monday = DateTime.new(2017, 10, 13, 0, 0, 0)
+    date_time = monday + (hour_offset / 24.0)
+    return date_time.strftime("new Date(%Y,%m,%d,%H)")
+  end
+
+  scores_csv = ''
+  scores_hash.each do |hourOffset, employee_and_score|
+    all_empls_scores = employee_and_score.map{|employee_id, score| score}.join(', ')
+    js_date = get_js_date_for_offset(hourOffset)
+    scores_csv += "[#{js_date}, #{all_empls_scores}], "
+  end
+%>
+
+<script type="application/javascript">
+    google.charts.load('current', {packages: ['corechart', 'line', 'timeline', 'annotationchart', 'table']});
+    google.charts.setOnLoadCallback(drawTable);
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawTable() {
+        var container = document.getElementById('table_div');
+        var table = new google.visualization.Table(container);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('string', 'EmplID');
+
+        <% (0..6).each do |day| %>
+        dataTable.addColumn('number', '<%= "#{days[day]}-1"%>');
+        dataTable.addColumn('number', '<%= "#{days[day]}-2"%>');
+        dataTable.addColumn('number', '<%= "#{days[day]}-3"%>');
+        <% end %>
+
+        dataTable.addRows([
+            <%=raw shift_score_table_data %>
+        ]);
+
+        var options = {
+            allowHtml: true,
+            showRowNumber: true,
+            width: '100%',
+            height: '100%'
+        };
+
+        table.draw(dataTable, options);
+    }
+
+    function drawChart() {
+        var container = document.getElementById('chart_div');
+        var chart = new google.visualization.AnnotationChart(container);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({type: 'date', id: 'X'});
+
+        <% scores_hash.first[1].keys.each do |employee_id| %>
+          dataTable.addColumn('number', <%=raw employee_id %>);
+        <% end %>
+
+
+        dataTable.addRows([
+          <%= scores_csv %>
+        ]);
+
+        var date_formatter = new google.visualization.DateFormat({
+            pattern: "EEE"
+        });
+
+        date_formatter.format(dataTable, 0)
+
+        var options = {
+            hAxis: {
+                title: 'Week Hour Offset',
+                format: 'EEE',
+                ticks: [0, 24, 48, 72, 96, 120, 144]
+            },
+            vAxis: {
+                title: 'Shift work history'
+            },
+            dateFormat: "EEE"
+        };
+
+        chart.draw(dataTable, options);
+    }
+</script>
+
+<%= link_to 'Edit', edit_organization_path(@organization) %> |
+<%= link_to 'Back', organizations_path %>
