@@ -16,37 +16,26 @@
 <p>Break down all the hours in a week 24h * 7 days = 168 hours. Look at their work history and graph a weighted score of all hours worked.</p>
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 
-<h3>Fill Open Shift</h3>
-<p>Best people for Monday 1st Shift (7a-3p)</p>
-
 <h4>Employees in this Organization</h4>
+<p>And scores for how appropriate of a pick they are for various shifts throughout the week.</p>
 <div id="table_div"></div>
-<ul>
-  <%
-    scores_hash = Hash.new{|h,k| h[k] = {}}
-    shift_score_table_data = ''
-  %>
-  <% @organization.employee.each do |employee| %>
-      <li><%= link_to employee.name, employee_path(employee) %></li>
-      <%
-        week_data = ''
-        (0..6).each do |day|
-          week_data << "#{Score.get_shift_score(employee, day, 1)}, "
-          week_data << "#{Score.get_shift_score(employee, day, 2)}, "
-          week_data << "#{Score.get_shift_score(employee, day, 3)}, "
-        end
-        shift_score_table_data << "['#{employee.employee_id}', #{week_data}], "
-
-
-        employee.scores.each do |score|
-          scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
-        end
-      %>
-  <% end %>
-</ul>
-
 <%
-  #
+  scores_hash = Hash.new{|h,k| h[k] = {}}
+  shift_score_table_data = ''
+  @organization.employee.each do |employee|
+    week_data = ''
+    (0..6).each do |day|
+      week_data << "#{Score.get_shift_score(employee, day, 1)}, "
+      week_data << "#{Score.get_shift_score(employee, day, 2)}, "
+      week_data << "#{Score.get_shift_score(employee, day, 3)}, "
+    end
+    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', #{week_data}], "
+
+    employee.scores.each do |score|
+      scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
+    end
+  end
+
   def get_js_date_for_offset(hour_offset)
     monday = DateTime.new(2017, 10, 13, 0, 0, 0)
     date_time = monday + (hour_offset / 24.0)
@@ -82,7 +71,12 @@
             <%=raw shift_score_table_data %>
         ]);
 
-        var options = {showRowNumber: true, width: '100%', height: '100%'};
+        var options = {
+            allowHtml: true,
+            showRowNumber: true,
+            width: '100%',
+            height: '100%'
+        };
 
         table.draw(dataTable, options);
     }
