@@ -26,8 +26,9 @@ class OrganizationsController < ApplicationController
         if employee
           employee.name = "#{rest_employee['last_name']}, #{rest_employee['first_name']}"
           employee.position=rest_employee['title']
-          puts employee.name
+
           if employee.changed?
+            puts employee.name
             @updates += 1
           end
 
@@ -38,8 +39,18 @@ class OrganizationsController < ApplicationController
   end
 
   def shiftscore
-    @day_number = params[:day_number].to_i
-    @shift_number = params[:shift_number].to_i
+    @day_number = params[:day_number]
+    if not @day_number
+      @day_number = 0
+    end
+    @day_number = @day_number.to_i
+
+
+    @shift_number = params[:shift_number]
+    if not @shift_number
+      @shift_number = 1
+    end
+    @shift_number = @shift_number.to_i
   end
 
   # GET /organizations/new

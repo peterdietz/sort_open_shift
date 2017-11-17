@@ -26,16 +26,45 @@ Position: NAR
 Shift: <%= shifts[@shift_number] %>
 </pre>
 
+<%
+  if @shift_number==1
+    next_path = shiftscore_organization_path(@organization, :day_number => @day_number, :shift_number => 2)
+    if @day_number == 0
+      previous_path = shiftscore_organization_path(@organization, :day_number => 6, :shift_number => 3)
+    else
+      previous_path = shiftscore_organization_path(@organization, :day_number => @day_number-1, :shift_number => 3)
+    end
+  elsif @shift_number==2
+    next_path = shiftscore_organization_path(@organization, :day_number => @day_number, :shift_number => 3)
+    previous_path = shiftscore_organization_path(@organization, :day_number => @day_number, :shift_number => 1)
+  elsif @shift_number==3
+    if @day_number == 6
+      next_path = shiftscore_organization_path(@organization, :day_number => 0, :shift_number => 1)
+    else
+      next_path = shiftscore_organization_path(@organization, :day_number => @day_number+1, :shift_number => 1)
+    end
+    previous_path = shiftscore_organization_path(@organization, :day_number => @day_number, :shift_number => 2)
+  end
+%>
+
+<%= link_to "<< Previous", previous_path  %>
+<%= link_to "Next >>", next_path  %>
+
 
 <h4>Employees in this Organization</h4>
 <div id="table_div"></div>
 <%
   shift_score_table_data = ''
-
+  unordered_scores = {}
 
   @organization.employee.each do |employee|
-    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', '#{employee.name}', '#{employee.position}', #{Score.get_shift_score(employee, @day_number, @shift_number)}], "
+    score = Score.get_shift_score(employee, @day_number, @shift_number)
+
+    unordered_scores[employee.employee_id] = 3.2
+    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', '#{employee.name}', '#{employee.position}', #{score}], "
   end
+
+  #ordered_scores = unordered_scores.foo
 
 %>
 
