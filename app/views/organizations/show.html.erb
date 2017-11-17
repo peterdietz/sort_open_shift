@@ -31,7 +31,7 @@
       week_data << "#{Score.get_shift_score(employee, day, 2)}, "
       week_data << "#{Score.get_shift_score(employee, day, 3)}, "
     end
-    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', #{week_data}], "
+    shift_score_table_data << "['#{link_to employee.name, employee_path(employee), :data => {:name => employee.name, :position => employee.position, :employee_id => employee.employee_id}}', #{week_data}], "
 
     employee.scores.each do |score|
       scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
@@ -61,7 +61,7 @@
         var container = document.getElementById('table_div');
         var table = new google.visualization.Table(container);
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('string', 'EmplID');
+        dataTable.addColumn('string', 'Employee');
 
         <% (0..6).each do |day| %>
         dataTable.addColumn('number', '<%= "#{days[day]}-1"%>');

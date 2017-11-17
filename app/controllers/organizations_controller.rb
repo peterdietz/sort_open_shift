@@ -1,3 +1,4 @@
+require 'rest-client'
 class OrganizationsController < ApplicationController
   before_action :set_organization, only: [:show, :shiftscore, :edit, :update, :destroy]
 
@@ -12,8 +13,32 @@ class OrganizationsController < ApplicationController
   def show
   end
 
+  def refresh
+    @updates = 0
+
+    Organization.all.each do |organization|
+      response = RestClient::Request.execute(:method => :get,
+                                             :url => "https://app.onshift.com/rest/user?organization=#{organization.v2organization_id}&limit=99999",
+                                             :cookies => {'tg-token' => Rails.application.config.SCHEDULE_TOKEN})
+      rest_employees = JSON.parse(response.to_str)['objs']
+      rest_employees.each do |rest_employee|
+        employee = Employee.find_by_employee_id(rest_employee['id'])
+        if employee
+          employee.name = "#{rest_employee['last_name']}, #{rest_employee['first_name']}"
+          employee.position=rest_employee['title']
+          puts employee.name
+          if employee.changed?
+            @updates += 1
+          end
+
+          employee.save
+        end
+      end
+    end
+  end
+
   def shiftscore
-    @organization_copy = "abc"
+
   end
 
   # GET /organizations/new
