@@ -16,12 +16,8 @@
 <p>Break down all the hours in a week 24h * 7 days = 168 hours. Look at their work history and graph a weighted score of all hours worked.</p>
 <div id="chart_div" style="width: 900px; height: 500px;"></div>
 
-
 <h3>Fill Open Shift</h3>
-<p>Best people for Monday 11p-7am</p>
-
-
-
+<p>Best people for Monday 1st Shift (7a-3p)</p>
 
 <h4>Employees in this Organization</h4>
 <div id="table_div"></div>
@@ -64,7 +60,7 @@
         var table = new google.visualization.Table(container);
         var dataTable = new google.visualization.DataTable();
         dataTable.addColumn('number', 'EmployeeID');
-        dataTable.addColumn('number', 'SMF');
+        dataTable.addColumn('number', 'Monday First Shift');
 
         dataTable.addRows([
             <%= smf %>
