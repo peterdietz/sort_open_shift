@@ -28,7 +28,7 @@
 <ul>
   <% scores_hash = Hash.new{|h,k| h[k] = {}} %>
   <% @organization.employee.each do |employee| %>
-      <li><%= link_to employee.name, employee_path(employee) %></li>
+      <li><%= link_to "#{employee.name} - SeanMichaelFurguson: #{Score.monday_first_shift(employee)}", employee_path(employee) %></li>
       <% employee.scores.each do |score|
           scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
       end %>

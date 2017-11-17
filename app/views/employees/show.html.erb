@@ -117,6 +117,8 @@
   <li><%= day %>Shift 2: <%= shifts[:second_shift] %></li>
   <li><%= day %>Shift 3: <%= shifts[:third_shift] %></li>
   <% end %>
+
+  <li>SMFS: <%= Score.monday_first_shift(@employee) %></li>
 </ul>
 
 <%= link_to 'Edit', edit_employee_path(@employee) %> |
