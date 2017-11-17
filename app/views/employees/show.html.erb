@@ -81,5 +81,43 @@
     }
 </script>
 
+<%
+  # 7a - 3p
+  first_shift_start = 7
+  first_shift_end = 15
+  # 3p - 11p
+  second_shift_start = 15
+  second_shift_end = 23
+  # 11p - 7a
+  third_shift_start = 23
+  third_shift_end = 7
+
+  scores = Hash.new{|h,k| h[k] = {}}
+
+  (0..6).each do |n|
+    scores[n][:first_shift] = @employee.scores.where("hourOffset > #{first_shift_start + n*24} and hourOffset < #{first_shift_end + n*24}").average("V1SHITS")
+    scores[n][:second_shift] = @employee.scores.where("hourOffset > #{second_shift_start + n*24} and hourOffset < #{second_shift_end + n*24}").average("V1SHITS")
+    if (third_shift_end + 24 + n*24) < 167
+      scores[n][:third_shift] = @employee.scores.where("hourOffset > #{third_shift_start + n*24} and hourOffset < #{third_shift_end + 24 + n*24}").average("V1SHITS")
+    else
+      # 0-167.. get Sunday 11p (167) to Monday 7a (6)
+      scores[n][:third_shift] = @employee.scores.where("hourOffset = 167 or hourOffset < 7").average("V1SHITS")
+    end
+  end
+
+
+
+%>
+
+<h2>Score for the shifts of the day</h2>
+<ul>
+
+  <% scores.each do |day, shifts| %>
+  <li><%= day %>Shift 1: <%= shifts[:first_shift] %></li>
+  <li><%= day %>Shift 2: <%= shifts[:second_shift] %></li>
+  <li><%= day %>Shift 3: <%= shifts[:third_shift] %></li>
+  <% end %>
+</ul>
+
 <%= link_to 'Edit', edit_employee_path(@employee) %> |
 <%= link_to 'Back', employees_path %>
