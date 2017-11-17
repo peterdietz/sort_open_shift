@@ -22,15 +22,26 @@
 <h4>Employees in this Organization</h4>
 <div id="table_div"></div>
 <ul>
-  <% scores_hash = Hash.new{|h,k| h[k] = {}} %>
-  <% smf = '' %>
+  <%
+    scores_hash = Hash.new{|h,k| h[k] = {}}
+    shift_score_table_data = ''
+  %>
   <% @organization.employee.each do |employee| %>
-      <li><%= link_to "#{employee.name} - SeanMichaelFurguson: #{Score.monday_first_shift(employee)}", employee_path(employee) %></li>
-      <% smf << "[#{employee.employee_id}, #{Score.monday_first_shift(employee)}]," %>
+      <li><%= link_to employee.name, employee_path(employee) %></li>
+      <%
+        week_data = ''
+        (0..6).each do |day|
+          week_data << "#{Score.get_shift_score(employee, day, 1)}, "
+          week_data << "#{Score.get_shift_score(employee, day, 2)}, "
+          week_data << "#{Score.get_shift_score(employee, day, 3)}, "
+        end
+        shift_score_table_data << "['#{employee.employee_id}', #{week_data}], "
 
-      <% employee.scores.each do |score|
+
+        employee.scores.each do |score|
           scores_hash[score.hourOffset][employee.employee_id] = score.V2SHITS
-      end %>
+        end
+      %>
   <% end %>
 </ul>
 
@@ -59,11 +70,16 @@
         var container = document.getElementById('table_div');
         var table = new google.visualization.Table(container);
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('number', 'EmployeeID');
-        dataTable.addColumn('number', 'Monday First Shift');
+        dataTable.addColumn('string', 'EmployeeID');
+
+        <% (0..6).each do |day| %>
+        dataTable.addColumn('number', '<%= "#{day} - 1st"%>');
+        dataTable.addColumn('number', '<%= "#{day} - 2nd"%>');
+        dataTable.addColumn('number', '<%= "#{day} - 3rd"%>');
+        <% end %>
 
         dataTable.addRows([
-            <%= smf %>
+            <%=raw shift_score_table_data %>
         ]);
 
         var options = {showRowNumber: true, width: '100%', height: '100%'};
