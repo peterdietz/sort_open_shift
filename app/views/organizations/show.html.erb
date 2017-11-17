@@ -22,6 +22,8 @@
 <%
   scores_hash = Hash.new{|h,k| h[k] = {}}
   shift_score_table_data = ''
+  days = {0 => 'Mo', 1 => 'Tu', 2 => 'We', 3 => 'Th', 4 => 'Fr', 5 => 'Sa', 6 => 'Su'}
+
   @organization.employee.each do |employee|
     week_data = ''
     (0..6).each do |day|
@@ -59,12 +61,12 @@
         var container = document.getElementById('table_div');
         var table = new google.visualization.Table(container);
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('string', 'EmployeeID');
+        dataTable.addColumn('string', 'EmplID');
 
         <% (0..6).each do |day| %>
-        dataTable.addColumn('number', '<%= "#{day} - 1st"%>');
-        dataTable.addColumn('number', '<%= "#{day} - 2nd"%>');
-        dataTable.addColumn('number', '<%= "#{day} - 3rd"%>');
+        dataTable.addColumn('number', '<%= "#{days[day]}-1"%>');
+        dataTable.addColumn('number', '<%= "#{days[day]}-2"%>');
+        dataTable.addColumn('number', '<%= "#{days[day]}-3"%>');
         <% end %>
 
         dataTable.addRows([

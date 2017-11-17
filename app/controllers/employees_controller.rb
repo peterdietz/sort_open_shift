@@ -64,7 +64,10 @@ class EmployeesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_employee
-      @employee = Employee.find(params[:id])
+      @employee = Employee.find_by_id(params[:id])
+      if @employee.nil?
+        @employee = Employee.find_by_employee_id(params[:employee_id]) || raise(ActiveRecord::RecordNotFound)
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
