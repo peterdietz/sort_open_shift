@@ -120,5 +120,14 @@
     }
 </script>
 
+<h3>Fill Open Shifts</h3>
+<ul>
+  <% (0..6).each do |day| %>
+      <li><%= link_to "#{days[day]} - 1", shiftscore_organization_path(@organization, :day_number => day, :shift_number => 1) %></li>
+      <li><%= link_to "#{days[day]} - 2", shiftscore_organization_path(@organization, :day_number => day, :shift_number => 2) %></li>
+      <li><%= link_to "#{days[day]} - 3", shiftscore_organization_path(@organization, :day_number => day, :shift_number => 3) %></li>
+  <% end %>
+</ul>
+
 <%= link_to 'Edit', edit_organization_path(@organization) %> |
 <%= link_to 'Back', organizations_path %>

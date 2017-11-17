@@ -12,11 +12,18 @@
   <%= @organization.v2organization_id %>
 </p>
 
+<%
+  days = {0 => 'Mo', 1 => 'Tu', 2 => 'We', 3 => 'Th', 4 => 'Fr', 5 => 'Sa', 6 => 'Su'}
+  monday = DateTime.new(2017, 11, 13, 0, 0, 0)
+  date_time = monday + @day_number
+  shifts = {1 => '7a-3p', 2 => '3p-11p', 3 => '11p-7a'}
+%>
+
 <pre>
-Day: Saturday November 18, 2017
+Day: <%= date_time.strftime('%A %B %d, %Y') %>
 Location: Lakes
 Position: NAR
-Shift: 2p-10:30p
+Shift: <%= shifts[@shift_number] %>
 </pre>
 
 
@@ -24,10 +31,10 @@ Shift: 2p-10:30p
 <div id="table_div"></div>
 <%
   shift_score_table_data = ''
-  days = {0 => 'Mo', 1 => 'Tu', 2 => 'We', 3 => 'Th', 4 => 'Fr', 5 => 'Sa', 6 => 'Su'}
+
 
   @organization.employee.each do |employee|
-    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', '#{employee.name}', '#{employee.position}', #{Score.get_shift_score(employee, 5, 2)}], "
+    shift_score_table_data << "['#{link_to employee.employee_id, employee_path(employee)}', '#{employee.name}', '#{employee.position}', #{Score.get_shift_score(employee, @day_number, @shift_number)}], "
   end
 
 %>

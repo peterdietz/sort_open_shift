@@ -38,7 +38,8 @@ class OrganizationsController < ApplicationController
   end
 
   def shiftscore
-
+    @day_number = params[:day_number].to_i
+    @shift_number = params[:shift_number].to_i
   end
 
   # GET /organizations/new
