@@ -29,19 +29,6 @@
   <% end %>
 </ul>
 
-<!--hourOffset: shift['hourOffset'],-->
-<!--shiftCount: shift['shiftCount'],-->
-<!--recentShifts: shift['recentShifts'],-->
-<!--nonRecentShifts: shift['nonRecentShifts'],-->
-<!--recentRequestShifts: shift['recentRequestShifts'],-->
-<!--nonRecentRequestShifts: shift['nonRecentRequestShifts'],-->
-<!--recentCallOffs: shift['recentCallOffs'],-->
-<!--nonRecentCallOffs: shift['nonRecentCallOffs'],-->
-<!--recentNoShow: shift['recentNoShow'],-->
-<!--nonRecentNoShow: shift['nonRecentNoShow'],-->
-<!--V1SHITS: shift['V1SHITS'],-->
-<!--V2SHITS: shift['V2SHITS']-->
-
 <% scores_csv = @employee.scores.map{|score| "[#{score.hourOffset}, #{score.recentShifts}, #{score.nonRecentShifts}, #{score.recentRequestShifts}, #{score.nonRecentRequestShifts}, #{score.recentCallOffs}, #{score.nonRecentCallOffs}, #{score.recentNoShow}, #{score.nonRecentNoShow}, #{score.V1SHITS}, #{score.V2SHITS}]"}.join(', ') %>
 
 <script type="application/javascript">
@@ -81,22 +68,12 @@
     }
 </script>
 
-<%
-  scores = Hash.new{|h,k| h[k] = {}}
-  (0..6).each do |n|
-    scores[n][:first_shift] = Score.get_shift_score(@employee, n, 1)
-    scores[n][:second_shift] = Score.get_shift_score(@employee, n, 2)
-    scores[n][:third_shift] = Score.get_shift_score(@employee, n, 3)
-  end
-%>
-
 <h2>Score for the shifts of the day</h2>
 <ul>
-
-  <% scores.each do |day, shifts| %>
-  <li><%= day %>Shift 1: <%= shifts[:first_shift] %></li>
-  <li><%= day %>Shift 2: <%= shifts[:second_shift] %></li>
-  <li><%= day %>Shift 3: <%= shifts[:third_shift] %></li>
+  <% (0..6).each do |day| %>
+    <li><%= day %>Shift 1: <%= Score.get_shift_score(@employee, day, 1) %></li>
+    <li><%= day %>Shift 2: <%= Score.get_shift_score(@employee, day, 2) %></li>
+    <li><%= day %>Shift 3: <%= Score.get_shift_score(@employee, day, 3) %></li>
   <% end %>
 </ul>
 
